@@ -14,7 +14,7 @@ If you have 5 or more fingers up at any time, set that hand to 0.
 Game ends when one player has both hands set to 0.
 
 ROUGH OUTLINE:
-2 players - Player 1 and Player A
+2 players - Player 1 and Player 2
 Player 1 goes first
 
 BAREBONES:
@@ -25,6 +25,8 @@ Ask for input:
 - 4: LH hits RH
 - 5: RH hits LH
 - 6: RH hits RH
-- 7: Concede
 
-We should also probably give stats.
+PROJECT UPDATE 1:
+I'm too lazy to read what I wrote but, here's the basic task now:
+We're essentially about to run a minimax problem, gathering every feasible move state, terminating a branch if there exists a winning combination or if it's repeated (for example if there exists a state where one player has the exact same position as a prior move)
+Then we append every tree ending to a .json file, blargh.
