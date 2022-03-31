@@ -51,9 +51,51 @@ def find_board_state(moves):
     return [p1_left, p1_right, p2_left, p2_right]
 
 def check_equality(board_state, turnx, boo):
-    if (board_state[:] not in turnx):
+    # has to be a permutation, including repeats
+    # should return true if
+    # (a, b, b, c) (a, b, b, d)
+    sorted_bs = board_state
+    sorted_bs.sort()
+    sorted_tx = turnx
+    sorted_tx.sort()
+    if sorted_bs != sorted_tx:
         return 0
-    if (turnx[:] not in board_state)
+    
+    if (boo):
+        self = turnx[0:2]
+        opp = turnx[2:4]
+    else:
+        self = turnx[2:4]
+        opp = turnx[0:2]
+    
+    self_same = (board_state[0:2] == self) or (board_state[0] == self[1] and board_state[1] == self[0])
+    opp_same = (board_state[2:4] == opp) or (board_state[2] == opp[1] and board_state[3] == opp[0])
+
+    if (self_same and opp_same):
+        return 1
+    
+    return 0
+
+def boolTest(board_state, turn_num):
+    boo = (turn_num % 2 == 0)
+    if (boo):
+        self = board_state[0:2]
+        opp = board_state[2:4]
+    else:
+        self = board_state[2:4]
+        opp = board_state[0:2]
+    
+    toBeReturned = []
+    
+    for i in range(4):
+        if (self[i / 2] != 0 and opp[i % 2] != 0):
+            toBeReturned.append(i)
+
+    if (sum(self) < 5):
+        toBeReturned.append(5)
+    if (sum(self) % 2 == 0 and self[1] != self[2]):
+        toBeReturned.append(6)
+
 
 
 
@@ -67,7 +109,7 @@ def cycleTest(board_state, moves):
             q = check_equality(board_state, turnx, True)
         else:
             q = check_equality(board_state, turnx, False)
-        if (q == 1)
+        if (q == 1):
             return 1
     return 0
 
@@ -96,12 +138,13 @@ def run_spoons(moves):
             return 1
         if (test_case[i] == -1 and len(moves) % 2 == 0): # B's turn, has the win
             return -1
-        if (len(data) % 2 == 1):
+        if (len(test_case) % 2 == 1):
             return max(test_case)
         else:
             return min(test_case)
     return 7
 
+run_spoons([0])
 
 
 
