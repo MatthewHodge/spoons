@@ -10,24 +10,25 @@
 import json
 import spoons_input
 
+
 def find_board_state(moves):
     [p1_left, p1_right, p2_left, p2_right] = [1, 1, 1, 1]
     for i in range(len(moves)):
         if (i == 0):
             continue
         if (i % 2 == 1):
-            spoons_input.turn_computer(p1_left, p1_right, p2_left, p2_right, moves[i])
+            [p1_left, p1_right, p2_left, p2_right] = spoons_input.turn_computer(p1_left, p1_right, p2_left, p2_right, moves[i])
         else:
-            spoons_input.turn_computer(p2_left, p2_right, p1_left, p1_right, moves[i])
+            [p2_left, p2_right, p1_left, p1_right] = spoons_input.turn_computer(p2_left, p2_right, p1_left, p1_right, moves[i])
     return [p1_left, p1_right, p2_left, p2_right]
 
 def check_equality(board_state, turnx, boo):
     # has to be a permutation, including repeats
     # should return true if
     # (a, b, b, c) (a, b, b, d)
-    sorted_bs = board_state
+    sorted_bs = board_state.copy()
     sorted_bs.sort()
-    sorted_tx = turnx
+    sorted_tx = turnx.copy()
     sorted_tx.sort()
     if sorted_bs != sorted_tx:
         return 0
@@ -48,7 +49,7 @@ def check_equality(board_state, turnx, boo):
     return 0
 
 def boolTest(board_state, turn_num):
-    boo = (turn_num % 2 == 0)
+    boo = (turn_num % 2 == 1)
     if (boo):
         self = board_state[0:2]
         opp = board_state[2:4]
@@ -60,12 +61,20 @@ def boolTest(board_state, turn_num):
     
     for i in range(4):
         if (self[int(i / 2)] != 0 and opp[i % 2] != 0):
-            toBeReturned.append(i)
+            toBeReturned.append(i + 1)
 
-    if (sum(self) < 5):
+    if (sum(self) < 5 and (self[0] != 0 and self[1] != 0)):
         toBeReturned.append(5)
     if (sum(self) % 2 == 0 and self[0] != self[1]):
         toBeReturned.append(6)
+    
+    if (self[0] == self[1]):
+        if (3 in toBeReturned): toBeReturned.remove(3)
+        if (4 in toBeReturned): toBeReturned.remove(4)
+    
+    if (opp[0] == opp[1]):
+        if (2 in toBeReturned): toBeReturned.remove(2)
+        if (4 in toBeReturned): toBeReturned.remove(4)
 
     return toBeReturned
 
@@ -88,44 +97,51 @@ def cycleTest(board_state, moves):
 
             
 
-def run_spoons(moves):
+def run_spoons(moves, depth):
+    
     board_state = find_board_state(moves)
     if(board_state[0] == 0 and board_state[1] == 0):
+        return -1
         # with open("spoons_minimax_info.json", "w") as write_file:
         #    json.dump(moves, write_file)
         #    json.dump(-1 "\\n", write_file)
-        return -1
     
-    if (board_state[2] == 0 and board_state[3]):
-        #append json file moves + \n + 1 + \n
+    if (board_state[2] == 0 and board_state[3] == 0):
         return 1
+        #append json file moves + \n + 1 + \n
     
-    c = cycleTest(moves, board_state)
+    if (len(moves) >= depth):
+        return 2
+    
+    c = cycleTest(board_state, moves)
     if (c == 1):
         #append json file moves + \n + 0 + \n
         return 0
     
     arr = boolTest(board_state, len(moves))
-    test_case = []
+    test_case = [0] * len(arr)
     for i in range(len(arr)):
-        test_case[i] = run_spoons(moves + [arr[i]])
-        if (test_case[i] == 1 and len(moves) % 2 == 1): # currently A's turn and has the win
+        test_case[i] = run_spoons(moves + [arr[i]], depth)
+        if (test_case[i] == 2): return 0
+        if(test_case[i] == 1 and len(moves) % 2 == 1):
             return 1
-        if (test_case[i] == -1 and len(moves) % 2 == 0): # B's turn, has the win
+        if (test_case[i] == -1 and len(moves) % 2 == 0):
             return -1
-        if (len(test_case) % 2 == 1):
-            return max(test_case)
-        else:
-            return min(test_case)
-    return 7
+    
+    if (len(moves) % 2 == 1):
+        return max(test_case)
+    else:
+        return min(test_case)
+    
 
 with open("spoons_minimax_info.json", "w") as write_file:
     write_file.write(str(0))
     write_file.write("\n")
     write_file.write(str(0))
 
-run_spoons([0, 1, 1, 1, 2, 3, 4])
-
+depth = 40
+moves = [0]
+print(run_spoons(moves, 40))
 
 
 
