@@ -9,18 +9,10 @@
 #
 import json
 import spoons_input
+import depth_stat
 
 
-def find_board_state(moves):
-    [p1_left, p1_right, p2_left, p2_right] = [1, 1, 1, 1]
-    for i in range(len(moves)):
-        if (i == 0):
-            continue
-        if (i % 2 == 1):
-            [p1_left, p1_right, p2_left, p2_right] = spoons_input.turn_computer(p1_left, p1_right, p2_left, p2_right, moves[i])
-        else:
-            [p2_left, p2_right, p1_left, p1_right] = spoons_input.turn_computer(p2_left, p2_right, p1_left, p1_right, moves[i])
-    return [p1_left, p1_right, p2_left, p2_right]
+
 
 def check_equality(board_state, turnx, boo):
     # has to be a permutation, including repeats
@@ -85,28 +77,35 @@ def boolTest(board_state, turn_num):
 
 # returns a 1 if the board position is identical to a previous state (with reference to flipping users, flipped hands), else returns 0.
 def cycleTest(board_state, moves):
+    q = 0
     for i in range(len(moves) - 1):
-        turnx = find_board_state([moves[0:i]])
+        turnx = spoons_input.find_board_state(moves[0:i])
         if (i % 2 == len(moves) % 2):
             q = check_equality(board_state, turnx, True)
         else:
             q = check_equality(board_state, turnx, False)
+        
         if (q == 1):
             return 1
     return 0
 
-            
+def spoons_append(moves, endofgame):
+    moveKey = ''.join(map(str, moves))
+    spoons_dict[moveKey] = endofgame
+    return endofgame
 
 def run_spoons(moves, depth):
     
-    board_state = find_board_state(moves)
+    board_state = spoons_input.find_board_state(moves)
     if(board_state[0] == 0 and board_state[1] == 0):
+        spoons_append(moves, -1)
         return -1
         # with open("spoons_minimax_info.json", "w") as write_file:
         #    json.dump(moves, write_file)
         #    json.dump(-1 "\\n", write_file)
     
     if (board_state[2] == 0 and board_state[3] == 0):
+        spoons_append(moves, 1)
         return 1
         #append json file moves + \n + 1 + \n
     
@@ -115,7 +114,7 @@ def run_spoons(moves, depth):
     
     c = cycleTest(board_state, moves)
     if (c == 1):
-        #append json file moves + \n + 0 + \n
+        spoons_append(moves, 0)
         return 0
     
     arr = boolTest(board_state, len(moves))
@@ -134,30 +133,12 @@ def run_spoons(moves, depth):
         return min(test_case)
     
 
-with open("spoons_minimax_info.json", "w") as write_file:
-    write_file.write(str(0))
-    write_file.write("\n")
-    write_file.write(str(0))
 
-depth = 40
+
+depth = depth_stat.get_depth()
 moves = [0]
-print(run_spoons(moves, 40))
+spoons_dict = {}
+run_spoons(moves, depth)
 
-
-
-
-
-
-
-
-    
-
-
-
-
-        
-
-
-
-
-
+with open("spoons_minimax_info.json", "w") as write_file:
+    json.dump(spoons_dict, write_file)

@@ -31,13 +31,7 @@ I'm too lazy to read what I wrote but, here's the basic task now:
 We're essentially about to run a minimax problem, gathering every feasible move state, terminating a branch if there exists a winning combination or if it's repeated (for example if there exists a state where one player has the exact same position as a prior move)
 Then we append every tree ending to a .json file, blargh.
 
+
 PROJECT UPDATE 2:
-Okay so we ran into a recursion error, apparently we're calling this function wayyyyy too many times (such that it is exceeding 1k), which, okay.
-Assuming we are recurring the run_spoons(moves) function:
-At minimum we're looking at 6 different branches, which each can have a maximum of 6 different branches.
-or there's a coding error.
-two solutions:
-Solution A: Just append larger and larger data sets, stop recalling 'find board_state'.  The problem is that I'm feeding in a supposedly done board state.
-CORRECTION WORKED! Cycle_test wasn't inputted correctly.
-Thing pretty much almost entirely works, we almost have the full minimax, however the first turn seems to cause some issues.
-I do not think cycletest is working.
+Okay so, the problem is I'm running into a slight overflow error,
+by that I mean I'm calling one function at 
