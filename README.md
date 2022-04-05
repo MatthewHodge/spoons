@@ -99,4 +99,5 @@ run_spoons is the main recursive function, comprised of the following:
     - else return the maximum value of all possible moves if it is player 1's turn, or return the minimum value of all possible moves if it is player 2's turn.
 
 Then, once complete, a dictionary containing all possible move endings is then created and outputted to
-spoons_minimax_info.json
+spoons_minimax_info.json,
+with the key being the moveset ('011123', for example), and the value being the end board state.
